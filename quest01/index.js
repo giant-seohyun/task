@@ -8,11 +8,11 @@ const pause = document.getElementById("pause");
 const resume = document.getElementById("resume");
 const stop = document.getElementById("stop");
 const go = document.getElementById("go");
-const prev = document.getElementById("prev");
+const back = document.getElementById("back");
 let isStart = true;
 let isPause = false;
 let isResume = true;
-let isPrev = false;
+let isBack = false;
 let passedTime = 0;
 let startTime;
 let endTime;
@@ -20,7 +20,7 @@ let remaindTime;
 let pauseTime;
 let time;
 let delay;
-let idx;
+let idx = 0;
 
 // 딜레이 시간 변경
 function sleep(ms) {
@@ -34,7 +34,24 @@ async function randomDelayTimer() {
 
   for (let i = 0; i < datas.length; i++) {
     if (isPause) i = idx + 1;
+    if (isBack) i = idx - 1;
 
+    startTime = new Date();
+    delay = datas[i].delay;
+    idx = i;
+
+    textArea.value += `\n${datas[i].text}`;
+    await sleep(delay);
+  }
+}
+
+async function minusDelayTimer() {
+  clearTimeout(time);
+
+  for (let i = datas.length - 1; i > -1; i--) {
+    if (isPause) i = idx - 1;
+
+    startTime = new Date();
     delay = datas[i].delay;
     idx = i;
 
@@ -46,12 +63,13 @@ async function randomDelayTimer() {
 // 타이머
 function timer() {
   randomDelayTimer();
+  if (isBack) minusDelayTimer();
 }
 
 start.addEventListener("click", () => {
   isPause = false;
+  pauseTime = true;
   time = 0;
-  startTime = new Date();
 
   if (isStart) textArea.value = "start";
   timer();
@@ -61,20 +79,24 @@ start.addEventListener("click", () => {
 pause.addEventListener("click", () => {
   isPause = true;
   isResume = true;
-  endTime = new Date();
-  passedTime = endTime - startTime;
-  remaindTime = delay - passedTime;
-
+  if (pauseTime) {
+    endTime = new Date();
+    passedTime = endTime - startTime;
+    remaindTime = delay - passedTime;
+  }
   if (isPause)
     textArea.value += `\npause 할당시간 :${passedTime}, 남은시간 :${remaindTime}`;
 
   clearTimeout(time);
+  time = null;
+  pauseTime = false;
 });
 
 resume.addEventListener("click", () => {
   if (isResume) timer();
 
   isResume = false;
+  pauseTime = true;
 });
 
 stop.addEventListener("click", () => {
@@ -88,10 +110,13 @@ stop.addEventListener("click", () => {
 go.addEventListener("click", () => {
   textArea.value += "\ngo";
   if (isResume) timer();
+
+  isResume = false;
+  isBack = false;
 });
 
-prev.addEventListener("click", () => {
-  textArea.value += "\nprev";
-  isPrev = true;
+back.addEventListener("click", () => {
+  textArea.value += "\nback";
+  isBack = true;
   timer();
 });
