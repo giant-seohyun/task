@@ -15,16 +15,10 @@ const datas = [
 
 export { datas };
 
-// pauseTime = setInterval(() => {
-//   if (passedTime === 1000) {
-//     passedTime = 0;
-//   } else passedTime++;
-// }, 1);
+// textArea.value += `\n${datas[i].text}`;
+// await sleep(datas[idx].delay);
+// if (!isPrev) idx++;
+// else idx--;
 
-// pauseTime = performance.now();
-// passedTime = pauseTime - runTime;
-// remaindTime = delay - passedTime;
-
-// console.log("시작시간", runTime);
-// console.log("정지시간", pauseTime);
-// console.log("전체 딜레이 시간", remaindTime);
+// if (idx === datas.length) idx = 0;
+// else if (idx < 1) idx = datas.length;
