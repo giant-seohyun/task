@@ -3,7 +3,6 @@ import { datas } from "./constant.js";
 console.log("on");
 
 const textArea = document.getElementById("text-result");
-const textDelay = document.getElementById("text-delay");
 const start = document.getElementById("start");
 const pause = document.getElementById("pause");
 const resume = document.getElementById("resume");
@@ -21,6 +20,7 @@ let remaindTime;
 let pauseTime;
 let time;
 let delay;
+let idx;
 
 // 딜레이 시간 변경
 function sleep(ms) {
@@ -33,11 +33,13 @@ async function randomDelayTimer() {
   clearTimeout(time);
 
   for (let i = 0; i < datas.length; i++) {
-    // if (isPause) i = time;
+    if (isPause) i = idx + 1;
+
+    delay = datas[i].delay;
+    idx = i;
 
     textArea.value += `\n${datas[i].text}`;
-    textDelay.value += `\n${datas[i].delay}`;
-    await sleep(datas[i].delay);
+    await sleep(delay);
   }
 }
 
@@ -48,9 +50,12 @@ function timer() {
 
 start.addEventListener("click", () => {
   isPause = false;
+  time = 0;
+  startTime = new Date();
+
   if (isStart) textArea.value = "start";
   timer();
-  startTime = new Date();
+  idx = 0;
 });
 
 pause.addEventListener("click", () => {
@@ -58,16 +63,12 @@ pause.addEventListener("click", () => {
   isResume = true;
   endTime = new Date();
   passedTime = endTime - startTime;
-
-  console.log("총 시간 : ", passedTime);
-
   remaindTime = delay - passedTime;
 
   if (isPause)
     textArea.value += `\npause 할당시간 :${passedTime}, 남은시간 :${remaindTime}`;
 
   clearTimeout(time);
-  console.log(time);
 });
 
 resume.addEventListener("click", () => {
@@ -81,6 +82,7 @@ stop.addEventListener("click", () => {
 
   clearTimeout(time);
   time = null;
+  isResume = false;
 });
 
 go.addEventListener("click", () => {
