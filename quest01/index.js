@@ -34,7 +34,6 @@ async function randomDelayTimer() {
 
   for (let i = 0; i < datas.length; i++) {
     if (isPause) i = idx + 1;
-    if (isBack) i = idx - 1;
 
     startTime = new Date();
     delay = datas[i].delay;
@@ -62,26 +61,30 @@ async function minusDelayTimer() {
 
 // 타이머
 function timer() {
-  randomDelayTimer();
+  if (isStart) randomDelayTimer();
   if (isBack) minusDelayTimer();
 }
 
 start.addEventListener("click", () => {
   isPause = false;
+  isBack = false;
   pauseTime = true;
   time = 0;
 
   if (isStart) textArea.value = "start";
   timer();
   idx = 0;
+  isStart = false;
 });
 
 pause.addEventListener("click", () => {
   isPause = true;
   isResume = true;
+  isStart = true;
   if (pauseTime) {
     endTime = new Date();
-    passedTime = endTime - startTime;
+    if (delay === 0) passedTime = 0;
+    else passedTime = endTime - startTime;
     remaindTime = delay - passedTime;
   }
   if (isPause)
@@ -97,6 +100,7 @@ resume.addEventListener("click", () => {
 
   isResume = false;
   pauseTime = true;
+  isStart = true;
 });
 
 stop.addEventListener("click", () => {
@@ -105,18 +109,21 @@ stop.addEventListener("click", () => {
   clearTimeout(time);
   time = null;
   isResume = false;
+  isStart = true;
 });
 
 go.addEventListener("click", () => {
+  isBack = false;
+  isStart = true;
   textArea.value += "\ngo";
   if (isResume) timer();
 
   isResume = false;
-  isBack = false;
 });
 
 back.addEventListener("click", () => {
   textArea.value += "\nback";
   isBack = true;
+  isPause = true;
   timer();
 });
