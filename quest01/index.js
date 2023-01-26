@@ -4,6 +4,7 @@ console.log("on");
 
 const textArea = document.getElementById("text-result");
 const textDelay = document.getElementById("text-delay");
+const textAddData = document.getElementById("text-add-data");
 const start = document.getElementById("start");
 const pause = document.getElementById("pause");
 const resume = document.getElementById("resume");
@@ -12,6 +13,7 @@ const go = document.getElementById("go");
 const back = document.getElementById("back");
 const forward = document.getElementById("forward-jump");
 const prev = document.getElementById("prev-jump");
+const addData = document.getElementById("add-data");
 let isStart = true;
 let isPause = false;
 let isResume = true;
@@ -27,6 +29,7 @@ let time;
 let delay;
 let preDelay;
 let totalDelay;
+let randomNum;
 let idx = 0;
 
 // 딜레이 시간 변경
@@ -36,7 +39,13 @@ function sleep(ms) {
   });
 }
 
-async function randomDelayTimer() {
+// 랜덤 값 추출
+function randomData() {
+  randomNum = Math.floor(Math.random() * (datas.length + 1));
+  datas.push(datas[randomNum]);
+}
+
+async function plusDelayTimer() {
   clearTimeout(time);
 
   for (let i = 0; i < datas.length; i++) {
@@ -90,7 +99,7 @@ function jumpDelayTimer() {
 
 // 타이머
 function timer() {
-  if (isStart) randomDelayTimer();
+  if (isStart) plusDelayTimer();
   if (isBack) minusDelayTimer();
 }
 
@@ -177,4 +186,9 @@ prev.addEventListener("click", () => {
   isPrev = true;
   isForward = false;
   jumpDelayTimer();
+});
+
+addData.addEventListener("click", () => {
+  randomData();
+  textAddData.innerHTML = `${JSON.stringify(datas[randomNum])}`;
 });
