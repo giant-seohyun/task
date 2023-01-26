@@ -3,6 +3,7 @@ import { datas } from "./constant.js";
 console.log("on");
 
 const textArea = document.getElementById("text-result");
+const textDelay = document.getElementById("text-delay");
 const start = document.getElementById("start");
 const pause = document.getElementById("pause");
 const resume = document.getElementById("resume");
@@ -20,7 +21,10 @@ let remaindTime;
 let pauseTime;
 let time;
 let delay;
+let preDelay;
+let totalDelay;
 let idx = 0;
+let addNum = -1;
 
 // 딜레이 시간 변경
 function sleep(ms) {
@@ -36,9 +40,12 @@ async function randomDelayTimer() {
     if (isPause) i = idx + 1;
 
     startTime = new Date();
+    preDelay = datas[i + 1].preDelay;
     delay = datas[i].delay;
     idx = i;
 
+    await sleep(datas[i].preDelay);
+    textDelay.value += `\npreDelay ${datas[i].preDelay} delay ${delay}`;
     textArea.value += `\n${datas[i].text}`;
     await sleep(delay);
   }
@@ -51,9 +58,12 @@ async function minusDelayTimer() {
     if (isPause) i = idx - 1;
 
     startTime = new Date();
+    preDelay = datas[i - 1].preDelay;
     delay = datas[i].delay;
     idx = i;
 
+    await sleep(datas[i].preDelay);
+    textDelay.value += `\npreDelay ${datas[i].preDelay} delay ${delay}`;
     textArea.value += `\n${datas[i].text}`;
     await sleep(delay);
   }
@@ -71,7 +81,10 @@ start.addEventListener("click", () => {
   pauseTime = true;
   time = 0;
 
-  if (isStart) textArea.value = "start";
+  if (isStart) {
+    textArea.value = "start";
+    textDelay.value = `delay time`;
+  }
   timer();
   idx = 0;
   isStart = false;
@@ -83,13 +96,15 @@ pause.addEventListener("click", () => {
   isStart = true;
   if (pauseTime) {
     endTime = new Date();
-    if (delay === 0) passedTime = 0;
+    if (delay === 0 || preDelay === 0) passedTime = 0;
     else passedTime = endTime - startTime;
-    remaindTime = delay - passedTime;
+    totalDelay = preDelay + delay;
+    remaindTime = totalDelay - passedTime;
   }
-  if (isPause)
+  if (isPause) {
     textArea.value += `\npause 할당시간 :${passedTime}, 남은시간 :${remaindTime}`;
-
+    textDelay.value += `\n총 딜레이 :${totalDelay}`;
+  }
   clearTimeout(time);
   time = null;
   pauseTime = false;
@@ -105,6 +120,7 @@ resume.addEventListener("click", () => {
 
 stop.addEventListener("click", () => {
   textArea.value = "stop\n";
+  textDelay.value = "stop\n";
 
   clearTimeout(time);
   time = null;
@@ -115,7 +131,9 @@ stop.addEventListener("click", () => {
 go.addEventListener("click", () => {
   isBack = false;
   isStart = true;
+  pauseTime = true;
   textArea.value += "\ngo";
+  textDelay.value += `\ngo`;
   if (isResume) timer();
 
   isResume = false;
@@ -123,7 +141,9 @@ go.addEventListener("click", () => {
 
 back.addEventListener("click", () => {
   textArea.value += "\nback";
+  textDelay.value += "\nback";
   isBack = true;
   isPause = true;
+  pauseTime = true;
   timer();
 });
