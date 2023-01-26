@@ -28,7 +28,6 @@ let delay;
 let preDelay;
 let totalDelay;
 let idx = 0;
-let num;
 
 // 딜레이 시간 변경
 function sleep(ms) {
@@ -170,10 +169,12 @@ back.addEventListener("click", () => {
 
 forward.addEventListener("click", () => {
   isForward = true;
+  isPrev = false;
   jumpDelayTimer();
 });
 
 prev.addEventListener("click", () => {
   isPrev = true;
+  isForward = false;
   jumpDelayTimer();
 });
