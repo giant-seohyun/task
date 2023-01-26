@@ -7,7 +7,7 @@ const datas = [
   { text: "넷", preDelay: 200, delay: 1000 },
   { text: "다섯", preDelay: 0, delay: 500 },
   { text: "여섯", preDelay: 500, delay: 3000 },
-  { text: "일곱", preDelay: 1000, delay: 3000 },
+  { text: "일곱", preDelay: 1000, delay: 100 },
   { text: "여덟" },
   { text: "아홉", preDelay: 500, delay: 1000 },
   { text: "열", preDelay: 1000, delay: 0 },

@@ -10,10 +10,14 @@ const resume = document.getElementById("resume");
 const stop = document.getElementById("stop");
 const go = document.getElementById("go");
 const back = document.getElementById("back");
+const forward = document.getElementById("forward-jump");
+const prev = document.getElementById("prev-jump");
 let isStart = true;
 let isPause = false;
 let isResume = true;
 let isBack = false;
+let isForward = false;
+let isPrev = false;
 let passedTime = 0;
 let startTime;
 let endTime;
@@ -24,7 +28,7 @@ let delay;
 let preDelay;
 let totalDelay;
 let idx = 0;
-let addNum = -1;
+let num;
 
 // 딜레이 시간 변경
 function sleep(ms) {
@@ -37,10 +41,11 @@ async function randomDelayTimer() {
   clearTimeout(time);
 
   for (let i = 0; i < datas.length; i++) {
-    if (isPause) i = idx + 1;
+    if (isPause || isForward) i = idx + 1;
 
     startTime = new Date();
-    preDelay = datas[i + 1].preDelay;
+    if (i === datas.length - 1) preDelay = 0;
+    else preDelay = datas[i + 1].preDelay;
     delay = datas[i].delay;
     idx = i;
 
@@ -55,10 +60,11 @@ async function minusDelayTimer() {
   clearTimeout(time);
 
   for (let i = datas.length - 1; i > -1; i--) {
-    if (isPause) i = idx - 1;
+    if (isPause || isPrev) i = idx - 1;
 
     startTime = new Date();
-    preDelay = datas[i - 1].preDelay;
+    if (i === 0) preDelay = 0;
+    else preDelay = datas[i - 1].preDelay;
     delay = datas[i].delay;
     idx = i;
 
@@ -66,6 +72,20 @@ async function minusDelayTimer() {
     textDelay.value += `\npreDelay ${datas[i].preDelay} delay ${delay}`;
     textArea.value += `\n${datas[i].text}`;
     await sleep(delay);
+  }
+}
+
+// 데이터 점프
+function jumpDelayTimer() {
+  if (isForward) {
+    textDelay.value += `\npreDelay ${0} delay ${0}`;
+    textArea.value += `\n${datas[idx + 1].text}`;
+    idx++;
+  }
+  if (isPrev) {
+    textDelay.value += `\npreDelay ${0} delay ${0}`;
+    textArea.value += `\n${datas[idx - 1].text}`;
+    idx--;
   }
 }
 
@@ -146,4 +166,14 @@ back.addEventListener("click", () => {
   isPause = true;
   pauseTime = true;
   timer();
+});
+
+forward.addEventListener("click", () => {
+  isForward = true;
+  jumpDelayTimer();
+});
+
+prev.addEventListener("click", () => {
+  isPrev = true;
+  jumpDelayTimer();
 });
