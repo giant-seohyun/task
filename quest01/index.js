@@ -2,24 +2,13 @@ import { datas } from "./constant.js";
 
 console.log("on");
 
-const textArea = document.getElementById("text-result");
-const textDelay = document.getElementById("text-delay");
-const textAddData = document.getElementById("text-add-data");
-const start = document.getElementById("start");
-const pause = document.getElementById("pause");
-const resume = document.getElementById("resume");
-const stop = document.getElementById("stop");
-const go = document.getElementById("go");
-const back = document.getElementById("back");
-const forward = document.getElementById("forward-jump");
-const prev = document.getElementById("prev-jump");
-const addData = document.getElementById("add-data");
 let isStart = true;
 let isPause = false;
 let isResume = true;
 let isBack = false;
 let isForward = false;
 let isPrev = false;
+let idx = 0;
 let passedTime = 0;
 let startTime;
 let endTime;
@@ -30,19 +19,12 @@ let delay;
 let preDelay;
 let totalDelay;
 let randomNum;
-let idx = 0;
 
 // 딜레이 시간 변경
 function sleep(ms) {
   return new Promise((r) => {
     time = setTimeout(r, ms);
   });
-}
-
-// 랜덤 값 추출
-function randomData() {
-  randomNum = Math.floor(Math.random() * (datas.length + 1));
-  datas.push(datas[randomNum]);
 }
 
 async function plusDelayTimer() {
@@ -58,8 +40,8 @@ async function plusDelayTimer() {
     idx = i;
 
     await sleep(datas[i].preDelay);
-    textDelay.value += `\npreDelay ${datas[i].preDelay} delay ${delay}`;
-    textArea.value += `\n${datas[i].text}`;
+    const { callback } = datas[i];
+    if (callback) callback();
     await sleep(delay);
   }
 }
@@ -77,24 +59,16 @@ async function minusDelayTimer() {
     idx = i;
 
     await sleep(datas[i].preDelay);
-    textDelay.value += `\npreDelay ${datas[i].preDelay} delay ${delay}`;
-    textArea.value += `\n${datas[i].text}`;
+    const { callback } = datas[i];
+    if (callback) callback();
     await sleep(delay);
   }
 }
 
 // 데이터 점프
 function jumpDelayTimer() {
-  if (isForward) {
-    textDelay.value += `\npreDelay ${0} delay ${0}`;
-    textArea.value += `\n${datas[idx + 1].text}`;
-    idx++;
-  }
-  if (isPrev) {
-    textDelay.value += `\npreDelay ${0} delay ${0}`;
-    textArea.value += `\n${datas[idx - 1].text}`;
-    idx--;
-  }
+  if (isForward) idx++;
+  if (isPrev) idx--;
 }
 
 // 타이머
@@ -103,22 +77,21 @@ function timer() {
   if (isBack) minusDelayTimer();
 }
 
-start.addEventListener("click", () => {
+// **---사용할 수 있는 함수--** //
+// 시작
+export function start() {
   isPause = false;
   isBack = false;
   pauseTime = true;
   time = 0;
 
-  if (isStart) {
-    textArea.value = "start";
-    textDelay.value = `delay time`;
-  }
   timer();
   idx = 0;
   isStart = false;
-});
+}
 
-pause.addEventListener("click", () => {
+// 중지
+export function pause() {
   isPause = true;
   isResume = true;
   isStart = true;
@@ -129,66 +102,63 @@ pause.addEventListener("click", () => {
     totalDelay = preDelay + delay;
     remaindTime = totalDelay - passedTime;
   }
-  if (isPause) {
-    textArea.value += `\npause 할당시간 :${passedTime}, 남은시간 :${remaindTime}`;
-    textDelay.value += `\n총 딜레이 :${totalDelay}`;
-  }
   clearTimeout(time);
   time = null;
   pauseTime = false;
-});
+}
 
-resume.addEventListener("click", () => {
+// 이어서 시작
+export function resume() {
   if (isResume) timer();
 
   isResume = false;
   pauseTime = true;
   isStart = true;
-});
+}
 
-stop.addEventListener("click", () => {
-  textArea.value = "stop\n";
-  textDelay.value = "stop\n";
-
+// 리셋
+export function stop() {
   clearTimeout(time);
   time = null;
   isResume = false;
   isStart = true;
-});
+}
 
-go.addEventListener("click", () => {
+// 순방향
+export function go() {
   isBack = false;
   isStart = true;
   pauseTime = true;
-  textArea.value += "\ngo";
-  textDelay.value += `\ngo`;
   if (isResume) timer();
 
   isResume = false;
-});
+}
 
-back.addEventListener("click", () => {
-  textArea.value += "\nback";
-  textDelay.value += "\nback";
+// 역방향
+export function back() {
   isBack = true;
   isPause = true;
   pauseTime = true;
   timer();
-});
+}
 
-forward.addEventListener("click", () => {
+// 한 칸 앞으로
+export function forward() {
   isForward = true;
   isPrev = false;
   jumpDelayTimer();
-});
+}
 
-prev.addEventListener("click", () => {
+// 한 칸 뒤로
+export function prev() {
   isPrev = true;
   isForward = false;
   jumpDelayTimer();
-});
+}
 
-addData.addEventListener("click", () => {
-  randomData();
-  textAddData.innerHTML = `${JSON.stringify(datas[randomNum])}`;
-});
+// 랜덤 데이터 추출
+export function randomAddData() {
+  randomNum = Math.floor(Math.random() * (datas.length + 1));
+  datas.push(datas[randomNum]);
+}
+// **-----** //
