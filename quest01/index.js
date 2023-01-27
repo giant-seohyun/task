@@ -9,16 +9,17 @@ let isBack = false;
 let isForward = false;
 let isPrev = false;
 let idx = 0;
-let passedTime = 0;
+export let passedTime = 0; // 할당시간
 let startTime;
 let endTime;
-let remaindTime;
+export let remaindTime; // 남은시간
 let pauseTime;
 let time;
 let delay;
 let preDelay;
 let totalDelay;
 let randomNum;
+export let randomData; // 신규 데이터
 
 // 딜레이 시간 변경
 function sleep(ms) {
@@ -99,6 +100,7 @@ export function pause() {
     endTime = new Date();
     if (delay === 0 || preDelay === 0) passedTime = 0;
     else passedTime = endTime - startTime;
+    console.log(delay);
     totalDelay = preDelay + delay;
     remaindTime = totalDelay - passedTime;
   }
@@ -159,6 +161,7 @@ export function prev() {
 // 랜덤 데이터 추출
 export function randomAddData() {
   randomNum = Math.floor(Math.random() * (datas.length + 1));
-  datas.push(datas[randomNum]);
+  randomData = datas[randomNum];
+  datas.push(randomData);
 }
 // **-----** //

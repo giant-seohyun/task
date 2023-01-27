@@ -8,6 +8,9 @@ import {
   forward,
   prev,
   randomAddData,
+  passedTime,
+  remaindTime,
+  randomData,
 } from "./index.js";
 
 const textArea = document.getElementById("text-result");
@@ -27,6 +30,7 @@ startBtn.addEventListener("click", () => {
 
 pauseBtn.addEventListener("click", () => {
   pause();
+  textArea.value += `\n할당시간: ${passedTime},  남은시간: ${remaindTime}`;
 });
 
 resumeBtn.addEventListener("click", () => {
@@ -55,6 +59,7 @@ prevBtn.addEventListener("click", () => {
 
 addDataBtn.addEventListener("click", () => {
   randomAddData();
+  console.log("신규 값:", randomData);
 });
 
 export const datas = [
