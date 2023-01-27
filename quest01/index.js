@@ -100,7 +100,6 @@ export function pause() {
     endTime = new Date();
     if (delay === 0 || preDelay === 0) passedTime = 0;
     else passedTime = endTime - startTime;
-    console.log(delay);
     totalDelay = preDelay + delay;
     remaindTime = totalDelay - passedTime;
   }
